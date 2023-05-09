@@ -13,6 +13,8 @@ import com.llw.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,6 +43,7 @@ public class SetmealController {
      * @return
      */
     @PostMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public Result<String> save(@RequestBody SetmealDto setmealDto) {
 
         setmealService.saveWithDish(setmealDto);
@@ -94,6 +97,7 @@ public class SetmealController {
      * @return
      */
     @DeleteMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public Result<String> delete(@RequestParam List<Long> ids) {
         log.info("删除套餐id: {}", ids);
         setmealService.removeWithDish(ids);
@@ -104,8 +108,12 @@ public class SetmealController {
      * 根据条件查询对应的套餐数据
      * @param setmeal
      * @return
+     *      Cacheable: 如果有缓存则返回数据，若没有数据则将方法返回值写入缓存中
+     *      value: 缓存的名称，每个名称下面可以有多个key
+     *      key: 缓存的key
      */
     @GetMapping("/list")
+    @Cacheable(value = "setmealCache", key = "#setmeal.categoryId + '_' + #setmeal.status")
     public Result<List<Setmeal>> list(Setmeal setmeal) {
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId());
