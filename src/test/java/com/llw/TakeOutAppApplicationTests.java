@@ -8,6 +8,7 @@ import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import redis.clients.jedis.Jedis;
 
@@ -58,9 +59,9 @@ class TakeOutAppApplicationTests {
      */
     @Test
     public void testRedisString() {
-        redisTemplate.opsForValue().set("city", "beijing");
+        redisTemplate.opsForValue().set("city2", "beijing");
 
-        String city = (String) redisTemplate.opsForValue().get("city");
+        String city = (String) redisTemplate.opsForValue().get("city2");
         System.out.println(city);
     }
 
